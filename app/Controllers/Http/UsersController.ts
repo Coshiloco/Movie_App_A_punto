@@ -3,7 +3,10 @@ import User from 'App/Models/User'
 import CreateUserAuthValidator from 'App/Validators/CreateUserAuthValidator'
 
 export default class UsersController {
-  public async index({}: HttpContextContract) {}
+  public async index({ response }: HttpContextContract) {
+    const data = await User.query()
+    return response.ok(data)
+  }
 
   public async create({}: HttpContextContract) {}
 
