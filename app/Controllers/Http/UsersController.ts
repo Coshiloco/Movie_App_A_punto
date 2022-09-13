@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
 import CreateUserAuthValidator from 'App/Validators/CreateUserAuthValidator'
+import UserUpdateValidator from 'App/Validators/UserUpdateValidator'
 
 export default class UsersController {
   public async index({ response }: HttpContextContract) {
@@ -28,9 +29,20 @@ export default class UsersController {
 
   public async edit({}: HttpContextContract) {}
 
-  public async update({}: HttpContextContract) {}
+  public async update({ request, response, params }: HttpContextContract) {
+    const data = await request.validate(UserUpdateValidator)
+    await User.query().where('id', params.id).update(data)
+    const objectupdated = await User.query().where('id', params.id)
+    return response.ok(objectupdated)
+  }
 
-  public async destroy({}: HttpContextContract) {}
+  public async destroy({ response, params }: HttpContextContract) {
+    const idmanual = params.id
+    const data = await User.findOrFail(idmanual)
+    await data.delete()
+    const removed = await User.query()
+    return response.ok(removed)
+  }
 
   public async login({ auth, request, response }: HttpContextContract) {
     // grab uid and password values off request body
