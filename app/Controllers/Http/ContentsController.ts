@@ -1,12 +1,30 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Content from 'App/Models/Content'
 import CreateContentValidator from 'App/Validators/CreateContentValidator'
+import SortContentValidator from 'App/Validators/SortContentValidator'
 import UpdateContentValidator from 'App/Validators/UpdateContentValidator'
 
 export default class ContentsController {
-  public async index({ response }: HttpContextContract) {
-    const projects = await Content.query()
-    return response.ok(projects)
+  public async index({ response, request }: HttpContextContract) {
+    const title = request.input('title') ?? null
+    const year = request.input('year') ?? null
+    const rating = request.input('rating') ?? null
+    const category = request.input('category') ?? null
+    const isRecent = request.input('is_recent') ?? null
+    const isTrending = request.input('is_trending') ?? null
+    const validatedData = await request.validate(SortContentValidator)
+    const sort = validatedData.sort || 'id'
+    const order = validatedData.order || 'asc'
+    const content = await Content.query()
+      .if(title, (query) => query.where('title', 'like', `%${title}%`))
+      .if(year, (query) => query.where('year', '=', year))
+      .if(rating, (query) => query.where('price', '>=', rating))
+      .if(category, (query) => query.where('category', category))
+      .if(isRecent, (query) => query.where('is_recent', isRecent))
+      .if(isTrending, (query) => query.where('is_trending', isTrending))
+      .orderBy(sort, order)
+      .preload('images')
+    return response.ok(content)
   }
 
   public async create({}: HttpContextContract) {}
