@@ -30,6 +30,5 @@ Route.group(() => {
   Route.resource('/images', 'ImagesController').apiOnly()
   Route.post('/images/login', 'UsersController.login')
   Route.get('/withdescription', 'ContentsController.withdescription')
-})
-  .prefix('/api/movies')
-  .middleware('auth')
+}).prefix('/api/movies')
+// .middleware('auth')

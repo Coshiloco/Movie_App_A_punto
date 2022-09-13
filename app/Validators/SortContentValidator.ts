@@ -32,8 +32,8 @@ export default class SortContentValidator {
       'description',
       'rating',
       'category',
-      'isRecent',
-      'isTrending',
+      'is_recent',
+      'is_trending',
     ]),
   })
 
